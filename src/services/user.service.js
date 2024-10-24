@@ -17,3 +17,8 @@ export const registerUser = async (userData) => {
 	const { password: pwd, ...userWithoutPassword } = savedUser.toObject();
 	return userWithoutPassword;
 };
+
+export const findUserByEmail = async (email) => {
+	const user = await User.findOne({ email });
+	return user;
+};

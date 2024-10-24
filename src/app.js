@@ -12,6 +12,7 @@ import {
 	logErrors,
 	mongoErrorHandler,
 } from "./middlewares/errors.handler.js";
+import "./config/passport.js";
 
 ConnectDb();
 const app = express();
