@@ -1,6 +1,11 @@
 import jwt from "jsonwebtoken";
 import { registerUser } from "../services/user.service.js";
 import config from "../config/config.js";
+import {
+	generateAccessToken,
+	generateRefreshToken,
+} from "../services/auth.service.js";
+import { badData, badRequest, forbidden, notFound } from "@hapi/boom";
 
 export const register = async (req, res, next) => {
 	try {
@@ -14,17 +19,25 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
 	try {
 		const user = req.user;
-		const payload = {
-			sub: user._id,
-			name: user.name,
-			email: user.email,
-		};
-		const token = jwt.sign(payload, config.JWT_SECRET);
+		const accessToken = generateAccessToken(user);
+		const refreshToken = generateRefreshToken(user);
 		res.json({
 			user,
-			token,
+			accessToken,
+			refreshToken,
 		});
 	} catch (error) {
 		next(error);
 	}
+};
+
+export const refreshAccessToken = (req, res, next) => {
+	const { refreshToken } = req.body;
+
+	if (!refreshToken) throw badRequest("Refresh token is missing");
+	jwt.verify(refreshToken, config.JWT_SECRET, (err, user) => {
+		if (err) throw forbidden("Refresh token is invalid");
+		const accessToken = generateAccessToken(user);
+		res.json({ accessToken });
+	});
 };
