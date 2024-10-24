@@ -6,6 +6,12 @@ import config from "./config/config.js";
 import { appRouter } from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import ConnectDb from "./config/database.js";
+import {
+	boomErrorHandler,
+	errorHandler,
+	logErrors,
+	mongoErrorHandler,
+} from "./middlewares/errors.handler.js";
 
 ConnectDb();
 const app = express();
@@ -20,6 +26,11 @@ app.get("/health", (req, res) => {
 });
 
 appRouter(app);
+
+app.use(logErrors);
+app.use(mongoErrorHandler);
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
 app.listen(config.PORT, () => {
 	logger.info(`Server running on  http://localhost:${config.PORT}/`);
