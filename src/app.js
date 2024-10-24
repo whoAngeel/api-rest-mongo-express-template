@@ -4,6 +4,10 @@ import morgan from "morgan";
 
 import config from "./config/config.js";
 import { appRouter } from "./routes/index.js";
+import { logger } from "./lib/logger.js";
+import ConnectDb from "./config/database.js";
+
+ConnectDb();
 const app = express();
 
 app.use(cors());
@@ -18,5 +22,5 @@ app.get("/health", (req, res) => {
 appRouter(app);
 
 app.listen(config.PORT, () => {
-	console.log(`Server running on  http://localhost:${config.PORT}/`);
+	logger.info(`Server running on  http://localhost:${config.PORT}/`);
 });
